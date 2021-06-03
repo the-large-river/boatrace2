@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html onclick="playSong()">
+	<head>
+
+		<title>Battle</title>
+
+		<style>
+			
+			body{
+
+				background-color: black;
+			}
+
+
+
+
+
+			#scene {
+
+				position: relative;
+				background-image: url("background.png");
+				width: 1000px;
+				height: 563px;
+				display: table;
+				margin: 0 auto;
+				overflow: hidden;
+			}
+
+			#hero {
+
+				position: absolute;
+				left: 20px;
+				top: 120px
+			}
+
+			#hero2, #hero3 {
+
+				position: absolute;
+				left: 600px;
+				top: 120px;
+				z-index: 1;
+			}
+
+			#heroDead {
+
+				position: absolute;
+				left: -50px;
+				top: 220px;
+			}
+
+			#enemy {
+
+				position: absolute;
+				left: 600px;
+				top: -40px;
+
+
+			}
+
+
+			#enemy2, #enemy3 {
+
+				position: absolute;
+				left: 100px;
+				top: -40px;
+			}
+
+			#enemyDead{
+				position: absolute;
+				left: 500px;
+				top: 80px;
+			}
+
+			#enemyHP{
+
+				position: absolute;
+				left: 810px;
+				top: 40px;
+				color: white;
+				font-size: 30px;
+				font-family: sans-serif;
+			}
+
+			#heroWins{
+
+				position: absolute;
+				left: 20px;
+				top: 20px;
+			}
+
+			#heroHP{
+
+				position: absolute;
+				left: 115px;
+				top: 100px;
+				color: white;
+				font-size: 30px;
+				font-family: sans-serif;
+			}
+
+			#menu {
+
+				position: absolute;
+				left: 120px;
+				top: 420px;
+				width: 700px;
+				height: 130px;
+				background-color: rgba(0,0,100,7);
+				color: white;
+				border: 2px solid white;
+				border-radius: 10px 10px 10px 10px;
+				font-size: 22px;
+				padding-left: 40px;
+				font-family: sans-serif;
+				
+			}
+
+			#message{
+
+				position: absolute;
+				left: 400px;
+				top: 150px;
+				width: 200px;
+				height: 60px;
+				background-color: rgba(0,0,100,7);
+				color: white;
+				border: 2px solid white;
+				border-radius: 10px 10px 10px 10px;
+				font-size: 22px;
+				padding-left: 3px;
+				font-family: sans-serif;
+				text-align: center;
+				padding-top: 30px;
+			}
+
+
+			p, ul, li{
+
+				margin-top: 10px;
+				margin-bottom: 10px;
+			}
+
+			li{
+				list-style: none;
+			}
+
+			li:hover{
+				text-decoration: underline;
+				cursor: pointer;
+			}
+
+
+		</style>
+	</head>
+	<body>
+
+		<div id="scene">
+
+			<div id="heroHP">???/???</div>
+			<div id="enemyHP">???/???</div>
+			
+			<img src="hero.png" id="hero">
+			<img src="hero2.png" id="hero2">
+			<img src="hero3.png" id="hero3">
+			<img src="heroDead.png" id="heroDead">
+			<img src="heroWins.png" id="heroWins">
+
+			<img src="enemy.png" id="enemy">
+			<img src="enemy2.png" id="enemy2">
+			<img src="enemy3.png" id="enemy3">
+			<img src="enemyDead.png" id="enemyDead">
+
+			<div id="message"></div>>
+
+			<div id="menu">
+				
+				<p>What will you do?</p>
+
+				<ul>
+					<li onclick="fight()">Fight</li>
+					<li onclick="run()">Run</li>
+
+				</ul>
+
+			</div>
+
+		</div>
+
+		<script>
+
+			var fighting = false;
+
+			var heroHPMAX = 50;
+			var heroHP = heroHPMAX;
+			var heroHPDiv = document.getElementById('heroHP');
+
+
+
+
+
+			var enemyHPMAX = 100;
+			var enemyHP = enemyHPMAX;
+			var enemyHPDiv = document.getElementById('enemyHP');
+
+			
+
+			
+
+
+			var heroImg = document.getElementById('hero');
+			var hero2Img = document.getElementById('hero2');
+			var hero3Img = document.getElementById('hero3');
+			var heroDeadImg = document.getElementById('heroDead');
+			var heroWinsImg = document.getElementById('heroWins');
+			hero2Img.style.display = 'none';
+			hero3Img.style.display = 'none';
+			heroDeadImg.style.display = 'none';
+			heroWinsImg.style.display = 'none';
+
+			var enemyImg = document.getElementById('enemy');
+			var enemy2Img = document.getElementById('enemy2');
+			var enemy3Img = document.getElementById('enemy3');
+			var enemyDeadImg = document.getElementById('enemyDead');
+
+			enemy2Img.style.display = 'none';
+			enemy3Img.style.display = 'none';
+			enemyDeadImg.style.display = 'none';
+
+			var messageDiv = document.getElementById('message');
+			var menuDiv = document.getElementById('menu')
+
+			messageDiv.style.display = 'none';
+
+
+			var song = new Audio('BoxCat_Games_-_05_-_Battle_Boss.mp3');
+
+			song.volume = .3;
+
+			var heroAttackSound = new Audio('heroAttack.mp3');
+			var enemyAttackSound = new Audio('enemyAttack.mp3');
+			var runSound = new Audio('run.mp3');
+			var victorySong = new Audio('254644__klankbeeld__intro-brass-01.mp3');
+
+			var songStarted = false;
+
+			function playSong(){
+
+				if (songStarted == true) {
+
+					return;
+				}
+
+				song.play();
+				songStarted = true;
+
+
+			}
+
+			function hideMenu(){
+
+				menuDiv.style.display = 'none';
+			}
+
+			function showMenu(){
+
+				if (heroHP ==0 || enemyHP == 0) {
+
+					return;
+				}
+
+				menuDiv.style.display = '';
+			}
+
+			function hideMessage(){
+
+				messageDiv.style.display = '';
+			}
+
+			function updateHeroHP(){
+
+				heroHPDiv.innerHTML = heroHP+'/'+heroHPMAX;	
+			}
+
+			function updateEnemyHP(){
+
+				enemyHPDiv.innerHTML = enemyHP+'/'+enemyHPMAX;	
+			}
+
+			function showHero2(){
+
+				heroImg.style.display = 'none';
+
+				hero2Img.style.display = '';
+			}
+
+
+			function showHero3(){
+
+				hero2Img.style.display = 'none';
+
+				hero3Img.style.display = '';
+			}
+
+
+
+
+			function showHero(){
+
+				hero3Img.style.display = 'none';
+
+				heroImg.style.display = '';
+			}
+
+			function showHeroDead(){
+
+				heroImg.style.display = 'none';
+				heroDeadImg.style.display = '';
+			}
+
+			function goToLostPage(){
+
+				window.location.href = 'lost.html';
+			}
+
+			function heroloses(){
+
+				
+
+				messageDiv.innerHTML = 'You lose';
+
+				messageDiv.style.display = '';
+
+				setTimeout(goToLostPage, 2000);
+			}
+
+
+			function fight(){
+
+				fighting = true;
+
+				heroImg.style.left = '520px'
+
+				hideMenu();
+
+				heroAttack();
+
+				setTimeout(enemyAttack, 1000);
+
+				setTimeout(showMenu, 2000);
+
+				setTimeout(stopFighting, 2000);
+
+
+			}
+
+			function stopFighting(){
+
+				fighting = false;
+			}
+			
+
+			updateHeroHP();
+			updateEnemyHP();
+
+			//setTimeout(enemyAttackFirst, 2000);
+
+			
+
+			function goToWonPage(){
+
+				window.location.href = 'won.html';
+			}
+
+			function heroWins(){
+
+				heroImg.style.display = 'none';
+
+				heroWinsImg.style.display = '';
+
+				messageDiv.innerHTML = 'You win!';
+
+				messageDiv.style.display = '';
+
+				song.pause();
+
+				victorySong.play();
+
+				setTimeout(goToWonPage, 10000);
+			}
+
+			function heroReturn(){
+
+				heroImg.style.left = '20px';
+				heroImg.style.opacity = 1;
+			}
+
+			function enemyReturn(){
+
+				enemyImg.style.left = '600px';
+
+				enemyImg.style.opacity = 1;
+			}
+
+			function enemyGetHit(){
+
+				var damage = 10 + Math.round(10 * Math.random());
+
+				if (Math.random() > .8 || heroHP < 20) {
+
+					damage = damage * 2;
+				}
+
+				enemyHP = enemyHP - damage;
+
+				if (enemyHP < 0) {
+
+					enemyHP = 0;
+				}
+
+				updateEnemyHP();
+
+				enemyImg.style.left = '630px';
+
+				enemyImg.style.opacity = .5;
+
+				if (enemyHP > 0) {
+
+					setTimeout(enemyReturn, 200)
+				}
+				else{
+					showEnemyDead();
+					setTimeout(heroWins, 700);
+				}
+
+
+
+				setTimeout(enemyReturn, 200);
+
+			}
+
+			function playHeroAttackSound(){
+
+				heroAttackSound.play();
+			}
+
+
+			function heroAttack(){
+
+				heroImg.style.left = '520px';
+				setTimeout(showHero2, 150);
+				setTimeout(playHeroAttackSound, 200);
+				setTimeout(showHero3, 250);
+				setTimeout(enemyGetHit, 300);
+				setTimeout(showHero, 350);
+				setTimeout(heroReturn, 450);
+			}
+
+			function playEnemyAttackSound(){
+
+				enemyAttackSound.play();
+			}
+
+
+			function enemyAttack(){
+
+				if (enemyHP = 0) {
+
+					return;
+				}
+
+				enemyImg.style.left = '100px';
+				setTimeout(showEnemy2, 200);
+				setTimeout(playEnemyAttackSound, 300);
+				setTimeout(showEnemy3, 500);
+				setTimeout(heroGetHit, 600);
+				setTimeout(showEnemy, 800);
+				setTimeout(enemyReturn, 1000);
+			}
+
+			function enemyAttackFirst(){
+
+				if (fighting == true) {
+
+					setTimeout(enemyAttackFirst, 2000);
+
+					return;
+				}
+
+				if (Math.random() > .8) {
+
+					hideMenu();
+
+					enemyAttack();
+
+					setTimeout(showMenu, 1500);
+				}
+				
+				setTimeout(enemyAttackFirst, 2000);
+			}
+
+			function goToRanPage(){
+
+				window.location.href = 'ran.html';
+			}
+
+
+			function run(){
+
+				fighting = true;
+
+				if (Math.random() > .5) {
+
+					heroImg.style.display = 'none';
+
+					runSound.play();
+
+					setTimeout(goToRanPage, 1000);
+				}
+
+				else{
+
+					hideMenu();
+
+					messageDiv.innerHTML = 'Couldn\'t run!';
+
+					messageDiv.style.display = '';
+
+					setTimeout(enemyAttack, 1000);
+
+					setTimeout(hidemessage, 2000);
+
+					setTimeout(showMenu, 2000);
+
+					setTimeout(stopFighting, 2000);
+				}
+
+				heroImg.style.display = 'none';
+
+				runSound.play();
+
+				setTimeout(goToRanPage, 1000);
+			}
+
+
+			function showEnemy2(){
+
+				enemyImg.style.display = 'none';
+				enemy2Img.style.display = '';
+			}
+
+			function showEnemy3(){
+
+				enemy2Img.style.display = 'none';
+				enemy3Img.style.display = '';
+			}
+
+			function showEnemy(){
+
+				enemy3Img.style.display = 'none';
+				enemyImg.style.display = '';
+			}
+
+			function showEnemyDead(){
+
+				enemyImg.style.display = 'none';
+				enemyDeadImg.style.display = '';
+			}
+
+			function heroGetHit(){
+
+				var damage = Math.round(30 * Math.random());
+
+				if (Math.random() < .3) {
+
+					damage = 0;
+				}
+
+				heroHP = heroHP - damage;
+				if (heroHP < 0) {
+
+					heroHP = 0;
+				}
+				updateHeroHP();
+				heroImg.style.left = '0px';
+				heroImg.style.opacity = .5;
+				
+				if(heroHP = 0){
+
+					setTimeout(heroReturn, 200)
+				}
+
+				else{
+
+					showHeroDead();
+					setTimeout(heroloses, 700);
+				}
+
+
+				setTimeout(heroReturn, 200);
+			}
+
+			
+
+		</script>
+
+
+
+
+
+	</body>
+</html>
